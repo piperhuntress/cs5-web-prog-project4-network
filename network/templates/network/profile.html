@@ -1,0 +1,87 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+<div class="profile">
+      <div>
+      <span class="profile-name">{{ profile.username  }} </span><br>
+      <b>Followers: {{ followers }} Following: {{ following }}</b><br>
+      {% if profile.username != request.user.username %}
+          {% if follows|length == 0 %}
+          <form action="{% url 'follow' profile.username %}" method="post">
+            {% csrf_token %}
+            <br><input class="btn btn-primary" type="submit" value="Follow">
+          </form>
+          {% endif %}
+          {% for follow in follows %}
+              {% if follow.status %}
+                <form action="{% url 'unfollow' profile.username %}" method="post">
+                  {% csrf_token %}
+                  <br><input class="btn btn-primary" type="submit" value="Unfollow">
+                </form>
+              {% else %}
+                <form action="{% url 'follow' profile.username %}" method="post">
+                  {% csrf_token %}
+                  <br><input class="btn btn-primary" type="submit" value="Follow">
+                </form>
+              {% endif  %}
+          {% endfor %}
+      {% endif  %}
+      </div>
+
+</div>
+<div class="allpost">
+    {% for post in page_obj %}
+        <div class="posts">
+                <p class="alignleft"><b>  <a href="{% url 'profile' post.username %}">{{ post.username }}</a></b> on <span class="datepost">{{ post.date_post }}</span> <br></p>
+                {% if post.username == request.user %}
+                  <p class="alignright edit">
+                    <a type="button" id="{{ post.id}}-edit" class="editlink"><img src="https://img.icons8.com/small/16/000000/edit.png"/></a>
+                  </p>
+                  {% endif %}
+                <div id="editpost{{ post.id }}" class="editpost" style="clear:both;">
+                  <form action="{% url 'edit' post.id %}" method="post" id="e-post">
+                    {% csrf_token %}
+                      <div class="form-group">
+                            <textarea id="message{{post.id}}" name="message" rows="3" cols="100%" placeholder="New post" required>{{ post.message }}</textarea>
+                            <input type="submit" class ="editbutton" value="Update Post" id="{{post.id}}-editbutton">
+                      </div>
+                  </form>
+                </div>
+                <div style="clear:both;"></div>
+                <div class="post-details{{post.id}}">
+                  <form action="{% url 'like' post.id %}" method="post">
+                    {% csrf_token %}
+                   <div id="post_message{{ post.id }}">{{ post.message }} </div><br><br>
+
+                   {% if post.status %}
+                     <a type="button" class="like" id="{{ post.id }}"><img src="https://img.icons8.com/office/16/000000/filled-like.png"/></a>
+                     <span id="total_likes{{ post.id }}">Likes ({{ post.total_likes }})</span>
+                  {% else %}
+                    <a type="button" class="like" id="{{ post.id }}"><img src="https://img.icons8.com/ultraviolet/16/000000/filled-like.png"/></a>
+                     <span id="total_likes{{ post.id }}">Likes ({{ post.total_likes }})</span>
+                  {% endif %}
+                </form>
+              </div>
+        </div>
+    {% empty %}
+        No posts.
+    {% endfor %}
+</div>
+<div class="page">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous &laquo;</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next &raquo;</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+{% endblock %}
