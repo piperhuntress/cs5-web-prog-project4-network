@@ -3,12 +3,11 @@ from django.db import models
 from django.conf import settings
 from datetime import datetime
 
+# Create your models here.
 
 class User(AbstractUser):
     def __str__(self):
         return self.username
-
-# Create your models here.
 
 class Post(models.Model):
     id = models.AutoField(primary_key=True)

@@ -45,11 +45,7 @@ def liked(user_id, post_id):
 def like(request, post_id):
     print(post_id)
     post = Post.objects.get(pk=int(post_id))
-    # user_likes = serializers.serialize('json', post.user_likes()) # convert the result set to json format
-    # print(post.user_likes())
-    # for user_like in post.user_likes():{
-    #     user_likes = user_likes + (user_like )
-    # }
+
     if post.likes.filter(id=request.user.id).exists():
         post.likes.remove(request.user)
         post.status = False;
@@ -57,7 +53,6 @@ def like(request, post_id):
         return JsonResponse({
             "liked": "False",
             "total_likes": post.total_likes(),
-            # "user_likes": user_likes
         })
     else:
         post.likes.add(request.user)
@@ -66,9 +61,7 @@ def like(request, post_id):
         return JsonResponse({
             "liked": "True",
             "total_likes": post.total_likes(),
-            # "user_likes": user_likes
         })
-
 
 @login_required(login_url='/login')
 def edit(request, post_id):
@@ -176,7 +169,6 @@ def profile(request, u_name):
         page_obj = paginator.get_page(page_number)
         user = User.objects.get(username=u_name)
         followers_list = Follow.objects.filter(follow=user, status=True) #get the names of the followers
-
 
     except Post.DoesNotExist:
         raise Http404("User not found.")

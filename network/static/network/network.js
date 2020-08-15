@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-
-
   function getCookie(name) {
       var cookieValue = null;
       if (document.cookie && document.cookie !== '') {
